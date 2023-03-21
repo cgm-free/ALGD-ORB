@@ -815,6 +815,42 @@ void ORBextractor::ComputeKeyPointsOctTree(vector<vector<KeyPoint> >& allKeypoin
                 if(maxX>maxBorderX)
                     maxX = maxBorderX;
 
+//******************************新增自适应阈值**************************************************************
+/* 2.计算Fast算法中的阈值参数 */
+                    Mat image_ = mvImagePyramid[level].rowRange(iniY, maxY).colRange(iniX, maxX);
+                    int maxValues[10], minValues[10];//分别为图像中最大的第i个灰度值和最小的第i个灰度值。n 为图像中前n个最大（最小）的灰度值，n 取为10。
+                    int threshold = 50;
+                    Mat_<uchar>::const_iterator it = image_.begin<uchar>();
+                    int count = 0;
+                    while(count < 10)
+                    {
+                        maxValues[count] = *it;
+                        minValues[count] = *it;
+                        count++;
+                        it++;
+                    }
+                    bubbleSortUp(maxValues);
+                    bubbleSortDown(minValues);
+
+                    while(it != image_.end<uchar>())
+                    {
+                        int value = *it;
+                        binaryInsertUp(maxValues, value);
+                        binaryInsertDown(minValues, value);
+                        it++;
+                    }
+//                    printArray(maxValues, 10);
+//                    printArray(minValues, 10);
+
+                    int diff = 0;
+                    for(int i = 0; i < 10; i++)
+                    {
+                        diff += maxValues[i] - minValues[i];
+                    }
+                    threshold = (int)(0.1f*diff/10.0);
+                    // cout  << "threshold：" << threshold << endl;
+
+//******************************新增**************************************************************
                 vector<cv::KeyPoint> vKeysCell;
                 //新增 划分网格
                  //std::cout << "iniX " <<iniX << " iniY " << iniY << " maxX " << maxX<<" maxY"<< maxY << std::endl;//绘制提取特征的小图像块
@@ -825,7 +861,7 @@ void ORBextractor::ComputeKeyPointsOctTree(vector<vector<KeyPoint> >& allKeypoin
 //                 cv::waitKey(0);
 
                 FAST(mvImagePyramid[level].rowRange(iniY,maxY).colRange(iniX,maxX),
-                     vKeysCell,iniThFAST,true);
+                     vKeysCell,threshold,true);
                 //新增 截取网格
 //                cv ::imwrite(to_string(level) + to_string(i) + to_string(j) + "_fast.png" , mvImagePyramid[level].rowRange(iniY,maxY).colRange(iniX,maxX));
                 cv::Mat image;
@@ -1185,4 +1221,122 @@ void ORBextractor::ComputePyramid(cv::Mat image)
 //     return ORBextractorDescriptorsTime;
 // }
 
+//***************新增冒泡算法求图像中最大的第i个灰度值和最小的第i个灰度值
+    void ORBextractor::bubbleSortUp(int *p)
+    {
+        uchar flag = 1;
+        for(int i=0; i < 10 && flag; i++)
+        {
+            flag = 0;
+            for(int j=9; j > i; j--)
+            {
+                if(p[j] < p[j-1])
+                {
+                    uchar tmp = p[j];
+                    p[j] = p[j-1];
+                    p[j-1] = tmp;
+                    flag = 1;
+                }
+            }
+        }
+    }
+
+    void ORBextractor::bubbleSortDown(int *p)
+    {
+        uchar flag = 1;
+        for(int i=0; i < 10 && flag; i++)
+        {
+            flag = 0;
+            for(int j=9; j > i; j--)
+            {
+                if(p[j] > p[j-1])
+                {
+                    uchar tmp = p[j];
+                    p[j] = p[j-1];
+                    p[j-1] = tmp;
+                    flag = 1;
+                }
+            }
+        }
+    }
+
+    void ORBextractor::printArray(int *p, int len)
+    {
+        for(int i=0; i<len; i++)
+        {
+            cout<<"p["<< i << "]:"<< p[i]<<" ";
+        }
+        cout<<endl;
+    }
+
+    void ORBextractor::binaryInsertUp(int *p, uchar value)
+    {
+        int left = 0;
+        int right = 9;
+        int mid;
+        if(value < p[0])
+            return;
+        if(value > p[9])
+        {
+            for(int i=0; i<9; i++)
+            {
+                p[i] = p[i+1];
+
+            }
+            p[9] = value;
+            return;
+        }
+
+        while(left < right)
+        {
+            mid = (left + right)/2;
+            if(mid == left || mid == right)
+                break;
+            if(value < p[mid])
+                right = mid;
+            else
+                left = mid;
+        }
+        for(int i = 0; i < left; i++)
+        {
+            p[i] = p[i+1];
+        }
+        p[left] = value;
+    }
+
+    void ORBextractor::binaryInsertDown(int *p, uchar value)
+    {
+        int left = 0;
+        int right = 9;
+        int mid;
+        if(value > p[0])
+            return;
+        if(value < p[9])
+        {
+            for(int i=0; i<9; i++)
+            {
+                p[i] = p[i+1];
+
+            }
+            p[9] = value;
+            return;
+        }
+
+        while(left < right)
+        {
+            mid = (left + right)/2;
+            if(mid == left || mid == right)
+                break;
+            if(value < p[mid])
+                left = mid;
+            else
+                right = mid;
+        }
+        for(int i = 0; i < left; i++)
+        {
+            p[i] = p[i+1];
+        }
+        p[left] = value;
+    }
+//***************新增
 } //namespace ORB_SLAM

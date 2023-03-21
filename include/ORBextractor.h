@@ -61,13 +61,13 @@ namespace ORB_SLAM2
         void operator()( cv::InputArray image, cv::InputArray mask,
                          std::vector<cv::KeyPoint>& keypoints,
                          cv::OutputArray descriptors);
-////*************新增
-//        void bubbleSortUp(int *p);
-//        void bubbleSortDown(int *p);
-//        void printArray(int *p, int len);
-//        void binaryInsertUp(int *p, uchar value);
-//        void binaryInsertDown(int *p, uchar value);
-////************
+//***************新增冒泡算法求图像中最大的第i个灰度值和最小的第i个灰度值
+    void bubbleSortUp(int *p);
+    void bubbleSortDown(int *p);
+    void printArray(int *p, int len);
+    void binaryInsertUp(int *p, uchar value);
+    void binaryInsertDown(int *p, uchar value);
+//************
         int inline GetLevels(){
             return nlevels;}
 
