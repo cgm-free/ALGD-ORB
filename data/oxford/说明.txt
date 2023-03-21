@@ -1,0 +1,25 @@
+There are five different changes in imaging conditions:   viewpoint changes, scale changes, image blur, JPEG compression, and illumination. In the cases of viewpoint change, scale change and blur, the same change in imaging conditions is applied to two different scene types. This means that the effect of changing the image conditions can be separated from the effect of changing the scene type. One scene type contains homogeneous regions with distinctive edge boundaries (e.g. graffiti, buildings),  and the other contains repeated textures of different forms.  In the viewpoint change test the camera varies from a fronto-parallel view to one with significant foreshortening at approximately 60 degrees to the camera. The scale change and blur sequences are acquired by varying the camera zoom and focus respectively. The scale changes by about a factor of four.  The light changes are introduced by varying the camera aperture.  The JPEG sequence is generated using a standard xv image  browser with the image quality parameter varying from  40\% to 2\%.  Each of the test sequences contains  6 images with a gradual geometric or photometric transformation. All images are of medium resolution (approximately 800 x 640 pixels). 
+	The images are either of planar scenes or the camera position is fixed during acquisition, so that in all cases the images are related by homographies (plane projective transformations). This means that the mapping relating images is known (or can be computed), and this mapping is used to determine ground truth matches for the affine covariant detectors.  
+The homographies between the reference image and the other images in a particular dataset are computed in two steps.  First, a small number of point correspondences are selected manually between the reference and other image. These correspondences are used to compute an approximate homography between the images, and the other image is warped by this homography so that it is roughly aligned with the reference image. Second, a standard small-baseline robust homography estimation algorithm is used to compute an accurate residual homography between the reference and warped image (using hundreds of automatically detected and matched interest points).  The composition of these two homographies (approximate and residual) gives an accurate homography between the reference and other image.  
+
+成像条件有五种不同的变化:视点变化，比例变化，图像模糊，JPEG压缩和照明。
+
+在视点变化、尺度变化和模糊的情况下对两种不同的场景类型应用了相同的成像条件变化。
+这意味着改变图像条件的效果可以从改变场景类型的效果中分离出来。
+一种场景类型包含具有独特边缘边界的同质区域(如涂鸦、建筑)，另一种包含不同形式的重复纹理。
+在视点变化测试中，相机从正面到平行变化查看一个显著的透视缩短约60镜头的角度。
+通过改变相机的变焦和对焦分别获得缩放变化和模糊序列。
+刻度的变化幅度大约是a乘以4。
+光线的变化是通过改变相机来实现的光圈。
+JPEG序列是使用标准的xv图像生成的浏览器的图像质量参数从401%到21%不等。
+每个测试序列包含6个渐变图像几何或光度变换。
+所有图像均为中分辨率(约800 x 640像素)。
+这些图像要么是平面场景的，要么是在采集过程中摄像机的位置是固定的，因此在所有情况下，图像都是通过同形关系(平面投影变换)联系起来的。
+这意味着相关图像的映射是已知的(或可以计算)，该映射用于确定仿射协变检测器的地真匹配。
+参考图像与其他图像之间的同形关系计算特定数据集中的图像分两个步骤。
+
+首先，在参考图像和其他图像之间手动选择少量的对应点。
+这些对应关系被用来计算图像之间的近似单应性，而另一个图像被该单应性扭曲，从而使其大致与参考图像对齐。
+其次，采用标准的小基线鲁棒单应性估计算法(使用数百个自动检测和匹配的兴趣点)计算参考图像和扭曲图像之间的精确残余单应性点)。
+
+这两个同形词的组合(近似和残差)给出了参考图像和其他图像之间的精确单应性。
